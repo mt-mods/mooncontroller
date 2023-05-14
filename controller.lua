@@ -616,7 +616,7 @@ end
 local safe_globals = {
 	-- Don't add pcall/xpcall unless willing to deal with the consequences (unless very careful, incredibly likely to allow killing server indirectly)
 	"assert", "error", "ipairs", "next", "pairs", "select",
-	"tonumber", "tostring", "type", "unpack", "_VERSION"
+	"tonumber", "tostring", "type", "_VERSION"
 }
 
 local function create_environment(pos, mem, event, itbl, send_warning)
@@ -629,6 +629,10 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 	-- Create new library tables on each call to prevent one Luacontroller
 	-- from breaking a library and messing up other Luacontrollers.
 	local env = {
+		unpack = function(t, a, b)
+			assert(not b or b < 2^30)
+			return unpack(t, a, b)
+		end,
 		pin = merge_port_states(vports, rports),
 		port = vports_copy,
 		event = event,
