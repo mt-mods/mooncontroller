@@ -8,7 +8,7 @@ enhanced luacontroller for minetest
 
 TODO:
 * [x] different/custom textures
-* [ ] check forked functions
+* [x] check forked functions
 * [ ] code modularization
 * [ ] api docs / readme
 * [ ] on_dig behavior (keep mem/code?)

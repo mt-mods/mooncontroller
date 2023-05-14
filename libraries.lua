@@ -13,7 +13,7 @@ function mooncontroller.get_require(pos, env)
 		if type(mooncontroller.luacontroller_libraries[name]) == "function" then
 			return mooncontroller.luacontroller_libraries[name](env, pos)
 		elseif type(mooncontroller.luacontroller_libraries[name]) == "table" then
-			return mesecon.tablecopy_change_env(mooncontroller.luacontroller_libraries[name], env)
+			return mooncontroller.tablecopy_change_env(mooncontroller.luacontroller_libraries[name], env)
 		end
 	end
 end
