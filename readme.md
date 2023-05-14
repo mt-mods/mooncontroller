@@ -8,10 +8,13 @@ enhanced luacontroller for minetest
 
 TODO:
 * [x] different/custom textures
+* [ ] code modularization
 * [ ] api docs / readme
+* [ ] on_dig behavior (keep mem/code?)
 * [ ] library stuff
 * [ ] license stuff (attribute cheapie)
 * [ ] cdb release
+* [ ] tests
 
 # License
 
