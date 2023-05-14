@@ -1,0 +1,22 @@
+Interrupts
+==========
+
+Interrupts allow you to schedule an event to occur later. You can also specify an interrupt ID (IID) for use in keeping track of multiple pending interrupts at the same time.
+
+To schedule an interrupt, use the interrupt() function.
+Example:
+interrupt(5,"test") --In 5 seconds, an interrupt will occur with the IID "test"
+
+Setting a third parameter to true will cause the interrupt to be "lightweight", where timing stops if the mapblock containing the Luacontroller is unloaded, and automatically resumes when it is loaded again. This stops machines from continously running when no players are in the area.
+Example:
+interrupt(5,"test",true) --Same as above, but lightweight
+
+Lightweight mode does have a few differences - timing resolution is limited to one second, however pending interrupts can also be canceled by specifying a nil time and the same IID as previously.
+Some servers may force all interrupts to be lightweight.
+
+When an interrupt's time expires, an event occurs.
+Example:
+{
+	type = "interrupt",
+	iid = "test"
+}

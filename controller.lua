@@ -936,7 +936,7 @@ for d = 0, 1 do
 	}
 
 	minetest.register_node(node_name, {
-		description = "Luacontroller",
+		description = "Enhanced luacontroller",
 		drawtype = "nodebox",
 		tiles = {
 			top,
@@ -1025,8 +1025,8 @@ minetest.register_node(mooncontroller.BASENAME .. "_burnt", {
 minetest.register_craft({
 	output = mooncontroller.BASENAME.."0000 3",
 	recipe = {
-		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
-		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
-		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
+		{'mesecons_luacontroller:luacontroller0000', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller0000'},
+		{'mesecons_luacontroller:luacontroller0000', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller0000'},
+		{'mesecons_luacontroller:luacontroller0000', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller0000'},
 	}
 })

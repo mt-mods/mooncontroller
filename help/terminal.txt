@@ -1,0 +1,18 @@
+Terminal I/O
+============
+
+Simple text I/O is available on the "terminal" tab.
+
+To send text to the Luacontroller, enter the message into the field provided, then press enter or click the send button.
+An event will occur containing the text entered.
+Example:
+{
+	type = "terminal",
+	text = "apt moo"
+}
+
+To display a message on the terminal, use the print() function.
+Example:
+print("Have you mooed today?")
+
+Errors and warnings are also displayed on the terminal.

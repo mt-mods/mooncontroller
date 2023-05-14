@@ -1,0 +1,24 @@
+Mesecons I/O
+============
+
+Luacontrollers provide four pins for mesecons connections, labeled from A to D.
+There is no need to manually switch between input and output modes - any pin not outputting mesecons power automatically works as an input.
+
+Input states can be read from the pin table.
+Example:
+if pin.a then
+	--Code here would be run only if pin A is active
+end
+
+Outputs can be set by writing to the port table.
+Example:
+port.b = true --Outputs a signal on pin B
+
+When a pin starts or stops receiving a signal, an event occurs with some information about the pin.
+Example:
+{
+	type = "on",
+	pin = {
+		name = "A"
+	}
+}

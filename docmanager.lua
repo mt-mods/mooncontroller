@@ -33,7 +33,7 @@ local included_examples = {
 }
 
 for k,v in pairs(included_examples) do
-	local f = io.open(minetest.get_modpath("mesecons_luacontroller").."/examples/"..v,"r")
+	local f = io.open(minetest.get_modpath("mooncontroller").."/examples/"..v,"r")
 	mooncontroller.lc_docs.examples[k] = f:read("*all")
 	f:close()
 end
@@ -79,7 +79,7 @@ local included_help_content = {
 
 for _,v in ipairs(included_help_order) do
 	local filename = included_help_content[v]
-	local f = io.open(minetest.get_modpath("mesecons_luacontroller").."/help/"..filename,"r")
+	local f = io.open(minetest.get_modpath("mooncontroller").."/help/"..filename,"r")
 	table.insert(mooncontroller.lc_docs.help_order,v)
 	mooncontroller.lc_docs.help_pages[v] = f:read("*all")
 	f:close()

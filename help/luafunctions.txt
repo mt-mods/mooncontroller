@@ -1,0 +1,60 @@
+Lua Functions
+=============
+
+The following Lua functions are available in a Luacontroller:
+
+From the string library:
+* byte
+* char
+* format
+* len
+* lower
+* upper
+* rep (restricted)
+* reverse
+* sub
+* find (restricted)
+
+From the math library:
+* abs
+* acos
+* asin
+* atan
+* atan2
+* ceil
+* cos
+* cosh
+* deg
+* exp
+* floor
+* fmod
+* frexp
+* ldexp
+* log
+* log10
+* max
+* min
+* modf
+* pow
+* rad
+* random
+* sin
+* sinh
+* sqrt
+* tan
+* tanh
+
+From the table library:
+* concat
+* insert
+* maxn
+* remove
+* sort
+
+From the os library:
+* clock
+* difftime
+* time
+
+Other:
+* print

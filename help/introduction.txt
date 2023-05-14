@@ -1,0 +1,8 @@
+Luacontroller Introduction
+==========================
+
+Welcome! This device is a Luacontroller (or "LuaC" for short), which is an advanced microcontroller capable of interacting with many devices and performing complex processing.
+
+As the name suggests, the Lua programming language is used to program this device.
+If you aren't familiar with Lua, a tutorial/reference can be found here:
+http://lua-users.org/wiki/TutorialDirectory

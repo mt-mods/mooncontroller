@@ -1,0 +1,12 @@
+Events
+======
+
+Unlike some other types of programs, Luacontroller programs cannot run continously.
+Instead, they run whenever something (an event) happens, and an "event" table is made available with details.
+
+Event types include:
+* 'program' - Program was loaded
+* 'on' and 'off' - A Mesecons pin changed on/off state
+* 'digiline' (if Digilines is installed) - A Digilines message was received
+* 'interrupt' - An interrupt timer reached zero
+* 'terminal' - Text was typed into the terminal
