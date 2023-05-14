@@ -6,7 +6,12 @@ enhanced luacontroller for minetest
 [![Download](https://img.shields.io/badge/Download-ContentDB-blue.svg)](https://content.minetest.net/packages/mt-mods/mooncontroller)
 [![Coverage Status](https://coveralls.io/repos/github/mt-mods/mooncontroller/badge.svg?branch=master)](https://coveralls.io/github/mt-mods/mooncontroller?branch=master)
 
-TODO
+TODO:
+* [ ] different/custom textures
+* [ ] api docs / readme
+* [ ] library stuff
+* [ ] license stuff (attribute cheapie)
+* [ ] cdb release
 
 # License
 
