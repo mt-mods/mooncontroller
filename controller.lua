@@ -1036,7 +1036,7 @@ for c = 0, 1 do
 for d = 0, 1 do
 	local cid = tostring(d)..tostring(c)..tostring(b)..tostring(a)
 	local node_name = BASENAME..cid
-	local top = "jeija_luacontroller_top.png"
+	local top = "mooncontroller_top.png"
 	if a == 1 then
 		top = top.."^jeija_luacontroller_LED_A.png"
 	end
@@ -1139,7 +1139,7 @@ end
 minetest.register_node(BASENAME .. "_burnt", {
 	drawtype = "nodebox",
 	tiles = {
-		"jeija_luacontroller_burnt_top.png",
+		"mooncontroller_burnt_top.png",
 		"jeija_microcontroller_bottom.png",
 		"jeija_microcontroller_sides.png",
 		"jeija_microcontroller_sides.png",

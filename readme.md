@@ -7,7 +7,7 @@ enhanced luacontroller for minetest
 [![Coverage Status](https://coveralls.io/repos/github/mt-mods/mooncontroller/badge.svg?branch=master)](https://coveralls.io/github/mt-mods/mooncontroller?branch=master)
 
 TODO:
-* [ ] different/custom textures
+* [x] different/custom textures
 * [ ] api docs / readme
 * [ ] library stuff
 * [ ] license stuff (attribute cheapie)
@@ -15,3 +15,5 @@ TODO:
 
 # License
 
+* `textures/mooncontroller_*`
+ * `CC-BY-SA 3.0` https://github.com/minetest-mods/mesecons/tree/master/mesecons_luacontroller/textures
