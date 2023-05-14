@@ -4,6 +4,7 @@ mooncontroller = {
 	BASENAME = "mooncontroller:mooncontroller"
 }
 
+dofile(MP.."/docmanager.lua")
 dofile(MP.."/common.lua")
 dofile(MP.."/libraries.lua")
 dofile(MP.."/port_states.lua")

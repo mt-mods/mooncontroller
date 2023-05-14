@@ -110,10 +110,10 @@ local function update_formspec(pos)
 			.."field_close_on_enter[terminal_input;false]"
 	elseif tab == 3 then
 		--Help tab
-		fs = fs..mesecon.lc_docs.generate_help_formspec(meta:get_int("help_selidx"))
+		fs = fs..mooncontroller.lc_docs.generate_help_formspec(meta:get_int("help_selidx"))
 	elseif tab == 4 then
 		--Examples tab
-		fs = fs..mesecon.lc_docs.generate_example_formspec(meta:get_int("example_selidx"))
+		fs = fs..mooncontroller.lc_docs.generate_example_formspec(meta:get_int("example_selidx"))
 			.."image_button[6.25,10.25;2.5,1;"..run_img..";program_example;]"
 	end
 
@@ -868,8 +868,8 @@ local function on_receive_fields(pos, _, fields, sender)
 					return
 				end
 				local selidx = meta:get_int("example_selidx")
-				selidx = math.max(1,math.min(selidx,#mesecon.lc_docs.example_order))
-				local code = mesecon.lc_docs.examples[mesecon.lc_docs.example_order[selidx]]
+				selidx = math.max(1,math.min(selidx,#mooncontroller.lc_docs.example_order))
+				local code = mooncontroller.lc_docs.examples[mooncontroller.lc_docs.example_order[selidx]]
 				meta:set_string("terminal_text","")
 				meta:set_int("tab",1)
 				set_program(pos,code)
