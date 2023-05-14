@@ -29,164 +29,12 @@
 -- (see where local env is defined)
 -- Something nice to play is is appending minetest.env to it.
 
-local BASENAME = "mooncontroller:mooncontroller"
-
-mooncontroller = {}
-
-local rules = {
-	a = {x = -1, y = 0, z =  0, name="A"},
-	b = {x =  0, y = 0, z =  1, name="B"},
-	c = {x =  1, y = 0, z =  0, name="C"},
-	d = {x =  0, y = 0, z = -1, name="D"},
-}
-
--- Mods can place their own "libraries" in here to be loaded via require() from in a Luacontroller.
--- These can take two different forms:
--- Function (recommended for libraries adding new functionality): A function that, when called, returns something that will be passed to the LuaC code.
--- Function signature is getlibrary(env, pos) where 'env' is the environment that the Luacontroller code is running in, and 'pos' is the position of the controller.
--- Table (recommended for libraries containing mostly lookup tables): A table that will be copied, and the copy returned to the LuaC code.
--- When using the table format, any functions in the table will have their environment changed to that of the Luacontroller.
-mooncontroller.luacontroller_libraries = {}
-
---This prepares the actual require() function that will be available in the LuaC environment.
-local function get_require(pos, env)
-	return function(name)
-		if type(mooncontroller.luacontroller_libraries[name]) == "function" then
-			return mooncontroller.luacontroller_libraries[name](env, pos)
-		elseif type(mooncontroller.luacontroller_libraries[name]) == "table" then
-			return mesecon.tablecopy_change_env(mooncontroller.luacontroller_libraries[name], env)
-		end
-	end
-end
-
-------------------
--- Action stuff --
-------------------
--- These helpers are required to set the port states of the luacontroller
-
-local function update_real_port_states(pos, rule_name, new_state)
-	local meta = minetest.get_meta(pos)
-	if rule_name == nil then
-		meta:set_int("real_portstates", 1)
-		return
-	end
-	local n = meta:get_int("real_portstates") - 1
-	local L = {}
-	for i = 1, 4 do
-		L[i] = n % 2
-		n = math.floor(n / 2)
-	end
-	--                   (0,-1) (-1,0)      (1,0) (0,1)
-	local pos_to_side = {  4,     1,   nil,   3,    2 }
-	if rule_name.x == nil then
-		for _, rname in ipairs(rule_name) do
-			local port = pos_to_side[rname.x + (2 * rname.z) + 3]
-			L[port] = (new_state == "on") and 1 or 0
-		end
-	else
-		local port = pos_to_side[rule_name.x + (2 * rule_name.z) + 3]
-		L[port] = (new_state == "on") and 1 or 0
-	end
-	meta:set_int("real_portstates",
-		1 +
-		1 * L[1] +
-		2 * L[2] +
-		4 * L[3] +
-		8 * L[4])
-end
-
-
-local port_names = {"a", "b", "c", "d"}
-
-local function get_real_port_states(pos)
-	-- Determine if ports are powered (by itself or from outside)
-	local meta = minetest.get_meta(pos)
-	local L = {}
-	local n = meta:get_int("real_portstates") - 1
-	for _, name in ipairs(port_names) do
-		L[name] = ((n % 2) == 1)
-		n = math.floor(n / 2)
-	end
-	return L
-end
-
-
-local function merge_port_states(ports, vports)
-	return {
-		a = ports.a or vports.a,
-		b = ports.b or vports.b,
-		c = ports.c or vports.c,
-		d = ports.d or vports.d,
-	}
-end
-
-local function generate_name(ports)
-	local d = ports.d and 1 or 0
-	local c = ports.c and 1 or 0
-	local b = ports.b and 1 or 0
-	local a = ports.a and 1 or 0
-	return BASENAME..d..c..b..a
-end
-
-
-local function set_port(pos, rule, state)
-	if state then
-		mesecon.receptor_on(pos, {rule})
-	else
-		mesecon.receptor_off(pos, {rule})
-	end
-end
-
-
-local function clean_port_states(ports)
-	ports.a = ports.a and true or false
-	ports.b = ports.b and true or false
-	ports.c = ports.c and true or false
-	ports.d = ports.d and true or false
-end
-
-
-local function set_port_states(pos, ports)
-	local node = minetest.get_node(pos)
-	local name = node.name
-	clean_port_states(ports)
-	local vports = minetest.registered_nodes[name].virtual_portstates
-	local new_name = generate_name(ports)
-
-	if name ~= new_name and vports then
-		-- Problem:
-		-- We need to place the new node first so that when turning
-		-- off some port, it won't stay on because the rules indicate
-		-- there is an onstate output port there.
-		-- When turning the output off then, it will however cause feedback
-		-- so that the luacontroller will receive an "off" event by turning
-		-- its output off.
-		-- Solution / Workaround:
-		-- Remember which output was turned off and ignore next "off" event.
-		local meta = minetest.get_meta(pos)
-		local ign = minetest.deserialize(meta:get_string("ignore_offevents"), true) or {}
-		if ports.a and not vports.a and not mesecon.is_powered(pos, rules.a) then ign.A = true end
-		if ports.b and not vports.b and not mesecon.is_powered(pos, rules.b) then ign.B = true end
-		if ports.c and not vports.c and not mesecon.is_powered(pos, rules.c) then ign.C = true end
-		if ports.d and not vports.d and not mesecon.is_powered(pos, rules.d) then ign.D = true end
-		meta:set_string("ignore_offevents", minetest.serialize(ign))
-
-		minetest.swap_node(pos, {name = new_name, param2 = node.param2})
-
-		if ports.a ~= vports.a then set_port(pos, rules.a, ports.a) end
-		if ports.b ~= vports.b then set_port(pos, rules.b, ports.b) end
-		if ports.c ~= vports.c then set_port(pos, rules.c, ports.c) end
-		if ports.d ~= vports.d then set_port(pos, rules.d, ports.d) end
-	end
-end
-
-
 -----------------
 -- Overheating --
 -----------------
 local function burn_controller(pos)
 	local node = minetest.get_node(pos)
-	node.name = BASENAME.."_burnt"
+	node.name = mooncontroller.BASENAME.."_burnt"
 	minetest.swap_node(pos, node)
 	minetest.get_meta(pos):set_string("lc_memory", "");
 	-- Wait for pending operations
@@ -624,7 +472,7 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 	local vports = minetest.registered_nodes[minetest.get_node(pos).name].virtual_portstates
 	local vports_copy = {}
 	for k, v in pairs(vports) do vports_copy[k] = v end
-	local rports = get_real_port_states(pos)
+	local rports = mooncontroller.get_real_port_states(pos)
 
 	-- Create new library tables on each call to prevent one Luacontroller
 	-- from breaking a library and messing up other Luacontrollers.
@@ -633,7 +481,7 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 			assert(not b or b < 2^30)
 			return unpack(t, a, b)
 		end,
-		pin = merge_port_states(vports, rports),
+		pin = mooncontroller.merge_port_states(vports, rports),
 		port = vports_copy,
 		event = event,
 		mem = mem,
@@ -707,7 +555,7 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 		env[name] = _G[name]
 	end
 
-	env.require = get_require(pos, env)
+	env.require = mooncontroller.get_require(pos, env)
 
 	return env
 end
@@ -805,7 +653,7 @@ local function run_inner(pos, meta, event)
 	end
 
 	-- Actually set the ports
-	set_port_states(pos, env.port)
+	mooncontroller.set_port_states(pos, env.port)
 
 	-- Save memory. This may burn the luacontroller if a memory overflow occurs.
 	save_memory(pos, meta, env.mem)
@@ -853,7 +701,7 @@ local function run(pos, event)
 end
 
 local function reset(pos)
-	set_port_states(pos, {a=false, b=false, c=false, d=false})
+	mooncontroller.set_port_states(pos, {a=false, b=false, c=false, d=false})
 end
 
 local function on_nodetimer_interrupt(pos)
@@ -1035,7 +883,7 @@ for b = 0, 1 do
 for c = 0, 1 do
 for d = 0, 1 do
 	local cid = tostring(d)..tostring(c)..tostring(b)..tostring(a)
-	local node_name = BASENAME..cid
+	local node_name = mooncontroller.BASENAME..cid
 	local top = "mooncontroller_top.png"
 	if a == 1 then
 		top = top.."^jeija_luacontroller_LED_A.png"
@@ -1059,21 +907,21 @@ for d = 0, 1 do
 
 	output_rules[cid] = {}
 	input_rules[cid] = {}
-	if a == 1 then table.insert(output_rules[cid], rules.a) end
-	if b == 1 then table.insert(output_rules[cid], rules.b) end
-	if c == 1 then table.insert(output_rules[cid], rules.c) end
-	if d == 1 then table.insert(output_rules[cid], rules.d) end
+	if a == 1 then table.insert(output_rules[cid], mooncontroller.rules.a) end
+	if b == 1 then table.insert(output_rules[cid], mooncontroller.rules.b) end
+	if c == 1 then table.insert(output_rules[cid], mooncontroller.rules.c) end
+	if d == 1 then table.insert(output_rules[cid], mooncontroller.rules.d) end
 
-	if a == 0 then table.insert( input_rules[cid], rules.a) end
-	if b == 0 then table.insert( input_rules[cid], rules.b) end
-	if c == 0 then table.insert( input_rules[cid], rules.c) end
-	if d == 0 then table.insert( input_rules[cid], rules.d) end
+	if a == 0 then table.insert( input_rules[cid], mooncontroller.rules.a) end
+	if b == 0 then table.insert( input_rules[cid], mooncontroller.rules.b) end
+	if c == 0 then table.insert( input_rules[cid], mooncontroller.rules.c) end
+	if d == 0 then table.insert( input_rules[cid], mooncontroller.rules.d) end
 
 	local mesecons = {
 		effector = {
 			rules = input_rules[cid],
 			action_change = function (pos, _, rule_name, new_state)
-				update_real_port_states(pos, rule_name, new_state)
+				mooncontroller.update_real_port_states(pos, rule_name, new_state)
 				run(pos, {type=new_state, pin=rule_name})
 			end,
 		},
@@ -1102,7 +950,7 @@ for d = 0, 1 do
 		paramtype = "light",
 		is_ground_content = false,
 		groups = groups,
-		drop = BASENAME.."0000",
+		drop = mooncontroller.BASENAME.."0000",
 		sunlight_propagates = true,
 		selection_box = selection_box,
 		node_box = node_box,
@@ -1136,7 +984,7 @@ end
 -- Overheated Luacontroller --
 ------------------------------
 
-minetest.register_node(BASENAME .. "_burnt", {
+minetest.register_node(mooncontroller.BASENAME .. "_burnt", {
 	drawtype = "nodebox",
 	tiles = {
 		"mooncontroller_burnt_top.png",
@@ -1151,7 +999,7 @@ minetest.register_node(BASENAME .. "_burnt", {
 	paramtype = "light",
 	is_ground_content = false,
 	groups = {dig_immediate=2, not_in_creative_inventory=1},
-	drop = BASENAME.."0000",
+	drop = mooncontroller.BASENAME.."0000",
 	sunlight_propagates = true,
 	selection_box = selection_box,
 	node_box = node_box,
@@ -1163,7 +1011,7 @@ minetest.register_node(BASENAME .. "_burnt", {
 		effector = {
 			rules = mesecon.rules.flat,
 			action_change = function(pos, _, rule_name, new_state)
-				update_real_port_states(pos, rule_name, new_state)
+				mooncontroller.update_real_port_states(pos, rule_name, new_state)
 			end,
 		},
 	},
@@ -1175,10 +1023,10 @@ minetest.register_node(BASENAME .. "_burnt", {
 ------------------------
 
 minetest.register_craft({
-	output = BASENAME.."0000 2",
+	output = mooncontroller.BASENAME.."0000 3",
 	recipe = {
-		{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
-		{'mesecons_materials:silicon', 'mesecons_materials:silicon', 'group:mesecon_conductor_craftable'},
-		{'group:mesecon_conductor_craftable', 'group:mesecon_conductor_craftable', ''},
+		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
+		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
+		{'mesecons_luacontroller:luacontroller', 'group:mesecon_conductor_craftable', 'mesecons_luacontroller:luacontroller'},
 	}
 })
