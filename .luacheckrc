@@ -23,3 +23,12 @@ read_globals = {
 ignore = {
 	"631" -- line too long
 }
+
+files["examples/*"] = {
+	globals = {
+		"mem", "port"
+	},
+	read_globals = {
+		"event", "pin", "interrupt", "digiline_send"
+	}
+}
