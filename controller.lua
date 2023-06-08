@@ -691,7 +691,9 @@ local function run(pos, event)
 	local code = meta:get_string("code")
 	local ok, errmsg = run_inner(pos, meta, event)
 	if not ok then
-		if not errmsg then errmsg = "(unknown error)" end
+		if type(errmsg) ~= "string" then
+			errmsg = "(unknown error)"
+		end
 		terminal_write(pos,"[ERROR] "..errmsg)
 		reset_meta(pos, code, errmsg)
 	else
