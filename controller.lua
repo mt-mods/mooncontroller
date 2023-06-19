@@ -461,6 +461,16 @@ local function get_digiline_send(pos, itbl, send_warning)
 	end
 end
 
+-- do not allow pattern matching in string.split (see string.find for details)
+local function safe_string_split(...)
+	if select(5, ...) then
+		debug.sethook() -- Clear hook
+		error("string.split: 'sep_is_pattern' (fifth parameter) may not be used in a Luacontroller")
+	end
+
+	return string.split(...)
+end
+
 local safe_globals = {
 	-- Don't add pcall/xpcall unless willing to deal with the consequences (unless very careful, incredibly likely to allow killing server indirectly)
 	"assert", "error", "ipairs", "next", "pairs", "select",
@@ -503,6 +513,7 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 			reverse = string.reverse,
 			sub = string.sub,
 			find = safe_string_find,
+			split = safe_string_split
 		},
 		math = {
 			abs = math.abs,
