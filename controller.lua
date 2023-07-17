@@ -157,8 +157,29 @@ local function get_clear(pos)
 	end
 end
 
-local function safe_date()
-	return(os.date("*t",os.time()))
+-- Wraps os.date to only replace valid formats,
+-- ignoring invalid ones that would cause a hard crash.
+local TIME_MAX = 32535244800  -- 01/01/3001
+local function safe_date(str, time)
+	if type(time) ~= "number" then
+		time = os.time()
+	elseif time < 0 or time >= TIME_MAX then
+		return nil
+	end
+	if type(str) ~= "string" then
+		return os.date("%c", time)
+	end
+	if str == "*t" then
+		return os.date("*t", time)
+	end
+	str = string.gsub(str, "%%[aAbBcdHImMpSwxXyY]", function(s)
+		return os.date(s, time)
+	end)
+	return str
+end
+
+local function datetable()
+	return os.date("*t")
 end
 
 -- string.rep(str, n) with a high value for n can be used to DoS
@@ -557,7 +578,8 @@ local function create_environment(pos, mem, event, itbl, send_warning)
 			clock = os.clock,
 			difftime = os.difftime,
 			time = os.time,
-			datetable = safe_date,
+			date = safe_date,
+			datetable = datetable,
 		},
 	}
 	env._G = env
