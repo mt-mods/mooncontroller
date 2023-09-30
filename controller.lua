@@ -839,11 +839,6 @@ end
 local function on_receive_fields(pos, _, fields, sender)
 	local meta = minetest.get_meta(pos)
 	if fields.tab then
-		local name = sender:get_player_name()
-		if minetest.is_protected(pos, name) and not minetest.check_player_privs(name, {protection_bypass=true}) then
-			minetest.record_protection_violation(pos, name)
-			return
-		end
 		meta:set_int("tab",fields.tab)
 		update_formspec(pos)
 	else
