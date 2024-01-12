@@ -23,3 +23,7 @@ function mooncontroller.tablecopy_change_env(t, env, seen)
 	end
 	return n
 end
+
+function mooncontroller.terminal_clear(pos)
+	minetest.get_meta(pos):set_string("terminal_text","")
+end
