@@ -19,5 +19,9 @@ TODO:
 
 # License
 
+Code:
+* `LGPLv3`
+
+Media:
 * `textures/mooncontroller_*`
  * `CC-BY-SA 3.0` https://github.com/minetest-mods/mesecons/tree/master/mesecons_luacontroller/textures
