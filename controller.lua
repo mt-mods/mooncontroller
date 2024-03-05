@@ -182,41 +182,18 @@ end
 local function validate_iid(iid)
 	if not iid then return true end -- nil is OK
 
-	local limit = mesecon.setting("luacontroller_interruptid_maxlen", 256)
 	if type(iid) == "string" then
-		if #iid <= limit then return true end -- string is OK unless too long
-		return false, "An interrupt ID was too large!"
-	end
-	if type(iid) == "number" or type(iid) == "boolean" then return true, "Non-string interrupt IDs are deprecated" end
-
-	local warn
-	local seen = {}
-	local function check(t)
-		if type(t) == "function" then
-			warn = "Functions cannot be used in interrupt IDs"
-			return false
-		end
-		if type(t) ~= "table" then
+		-- string type interrupt
+		local limit = mesecon.setting("luacontroller_interruptid_maxlen", 256)
+		if #iid <= limit then
+			-- string is OK unless too long
 			return true
 		end
-		if seen[t] then
-			warn = "Non-tree-like tables are forbidden as interrupt IDs"
-			return false
-		end
-		seen[t] = true
-		for k, v in pairs(t) do
-			if not check(k) then return false end
-			if not check(v) then return false end
-		end
-		return true
-	end
-	if not check(iid) then return false, warn end
-
-	if #minetest.serialize(iid) > limit then
 		return false, "An interrupt ID was too large!"
 	end
 
-	return true, "Table interrupt IDs are deprecated and are unreliable; use strings instead"
+	-- non-string and non-nil type interrupt
+	return false, "Non-string interrupt IDs are invalid"
 end
 
 local function get_next_nodetimer_interrupt(interrupts)
