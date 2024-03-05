@@ -180,7 +180,7 @@ local function remove_functions(obj)
 end
 
 local function validate_iid(iid)
-	if not iid then return true end -- nil is OK
+	if iid == nil then return true end -- nil is OK
 
 	if type(iid) == "string" then
 		-- string type interrupt
