@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: test
       run: |
-        docker-compose up --exit-code-from sut
+        docker compose up --exit-code-from sut
         sudo sed -i 's#/root/.minetest/worlds/world/worldmods/mooncontroller/##g' coverage/lcov.info
     - name: Coveralls
       uses: coverallsapp/github-action@v1
