@@ -756,6 +756,10 @@ function mooncontroller.set_program(pos, code)
 	return mooncontroller.run(pos, {type="program"})
 end
 
+local function on_construct(pos)
+	reset_meta()
+end
+
 for a = 0, 1 do -- 0 = off  1 = on
 for b = 0, 1 do
 for c = 0, 1 do
@@ -832,7 +836,7 @@ for d = 0, 1 do
 		sunlight_propagates = true,
 		selection_box = selection_box,
 		node_box = node_box,
-		on_construct = reset_meta,
+		on_construct = on_construct,
 		on_receive_fields = mooncontroller.on_receive_fields,
 		sounds = default.node_sound_stone_defaults(),
 		mesecons = mesecons,
