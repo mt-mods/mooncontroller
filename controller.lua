@@ -756,7 +756,7 @@ function mooncontroller.set_program(pos, code)
 	return mooncontroller.run(pos, {type="program"})
 end
 
-local function on_construct(pos)
+local function on_construct()
 	reset_meta()
 end
 
